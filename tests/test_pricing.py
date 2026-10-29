@@ -17,3 +17,21 @@ def test_unknown_discount_is_ignored(seeded):
     from app.models import Cart
     cart = SessionLocal().query(Cart).filter_by(customer_id="alex").first()
     assert calculate(cart.items, "OTHER").discount_minor == 0
+
+
+def test_discount_code_is_case_insensitive(seeded):
+    seeded.post("/cart/alex/items", json={"product_id": 1, "quantity": 1})
+    from app.database import SessionLocal
+    from app.models import Cart
+    cart = SessionLocal().query(Cart).filter_by(customer_id="alex").first()
+    assert calculate(cart.items, "welcome10").discount_minor == 129
+
+
+def test_discount_rounds_down(seeded):
+    seeded.post("/cart/alex/items", json={"product_id": 1, "quantity": 1})
+    from app.database import SessionLocal
+    from app.models import Cart
+    cart = SessionLocal().query(Cart).filter_by(customer_id="alex").first()
+    quote = calculate(cart.items, "WELCOME10")
+    assert quote.discount_minor == 129
+    assert quote.total_minor == 1170

@@ -1,6 +1,8 @@
 # THE FINAL COMMIT: Northstar Market
 
-Northstar Market is a small FastAPI e-commerce service prepared for **THE FINAL COMMIT**, a source-and-history debugging competition. It is intentionally supplied with one regression. Participants should investigate the code, tests, and Git history rather than assume the incident documents are authoritative.
+Northstar Market is a small FastAPI e-commerce service prepared for **THE FINAL COMMIT**, a source-and-history debugging competition. It is intentionally supplied with regressions. Participants should investigate the code, tests, and Git history rather than assume the incident documents are authoritative.
+
+The behavioral contract the service must satisfy is in [`docs/requirements.md`](docs/requirements.md).
 
 ## Run locally
 
@@ -23,7 +25,7 @@ The seed command is safe to run repeatedly; it only inserts the deterministic ca
 pytest
 ```
 
-The test suite covers ordinary behavior but is deliberately not a complete incident specification. The API has products, carts, checkout, orders, inventory validation, deterministic pricing, a fake payment provider, and an idempotency header on checkout.
+The test suite covers ordinary behavior but is deliberately not a complete incident specification. The API has products, carts, checkout, orders, inventory validation, deterministic pricing, a fake payment provider, and an idempotency header on checkout. `docs/requirements.md` is the authoritative contract; the visible tests cover only part of it.
 
 ## Useful API sequence
 
