@@ -1,0 +1,6 @@
+2026-10-23T11:16:02Z build #1842 PASS pytest
+2026-10-23T11:16:04Z build #1842 PASS openapi smoke test
+2026-10-24T09:02:18Z build #1848 PASS pytest
+2026-10-24T09:02:20Z build #1848 WARN retry scenario not included
+2026-10-25T15:34:11Z build #1851 PASS pytest
+2026-10-26T09:01:42Z build #1852 PASS pytest
