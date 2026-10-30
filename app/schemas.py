@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class ProductOut(BaseModel):
@@ -40,6 +40,14 @@ class CheckoutIn(BaseModel):
     customer_id: str = Field(min_length=1, max_length=80)
     discount_code: str | None = None
     payment_token: str = Field(min_length=1)
+
+    @field_validator("customer_id", "payment_token")
+    @classmethod
+    def reject_blank_values(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Value cannot be empty")
+        return value
 
 
 class OrderItemOut(BaseModel):
