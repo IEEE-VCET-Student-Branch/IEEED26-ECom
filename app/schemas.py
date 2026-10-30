@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+
+from pydantic import BaseModel, Field, field_validator
 
 
 class ProductOut(BaseModel):
@@ -40,6 +41,13 @@ class CheckoutIn(BaseModel):
     customer_id: str = Field(min_length=1, max_length=80)
     discount_code: str | None = None
     payment_token: str = Field(min_length=1)
+
+    @field_validator("customer_id", "payment_token")
+    @classmethod
+    def reject_whitespace(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Must not be empty or whitespace")
+        return value
 
 
 class OrderItemOut(BaseModel):
