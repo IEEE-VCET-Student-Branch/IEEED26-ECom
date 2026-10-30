@@ -29,3 +29,11 @@ def test_configurable_payment_decline_token(seeded, monkeypatch):
     res_ok = seeded.post("/checkout", headers={"Idempotency-Key": "dec-custom-2"},
                          json={"customer_id": "alex", "payment_token": "decline"})
     assert res_ok.status_code == 200
+
+
+def test_products_endpoint_with_and_without_trailing_slash(seeded):
+    r_no_slash = seeded.get("/products", follow_redirects=False)
+    assert r_no_slash.status_code == 200
+    r_with_slash = seeded.get("/products/", follow_redirects=False)
+    assert r_with_slash.status_code == 200
+    assert r_no_slash.json() == r_with_slash.json()
