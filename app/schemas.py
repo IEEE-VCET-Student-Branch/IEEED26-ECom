@@ -47,6 +47,7 @@ class OrderItemOut(BaseModel):
     name: str
     quantity: int
     unit_price_minor: int
+    model_config = {"from_attributes": True}
 
 
 class OrderOut(BaseModel):
@@ -57,3 +58,4 @@ class OrderOut(BaseModel):
     discount_minor: int
     total_minor: int
     items: list[OrderItemOut]
+    model_config = {"from_attributes": True}

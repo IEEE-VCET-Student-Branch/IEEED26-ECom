@@ -5,10 +5,16 @@ from app.models import Base
 from app.database import engine
 
 
-if __name__ == "__main__":
-    if get_settings().database_url.startswith("sqlite:///"):
-        Path(get_settings().database_url.removeprefix("sqlite:///")).unlink(missing_ok=True)
+def reset_db() -> None:
+    db_url = get_settings().database_url
+    if db_url.startswith("sqlite:///"):
+        db_file = db_url.removeprefix("sqlite:///")
+        if db_file != ":memory:":
+            Path(db_file).unlink(missing_ok=True)
     Base.metadata.drop_all(engine)
     init_db()
-    print("Database reset")
 
+
+if __name__ == "__main__":
+    reset_db()
+    print("Database reset")
