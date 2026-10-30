@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..dependencies import require_idempotency_key
 from ..schemas import CheckoutIn, OrderOut
-from ..services.order_service import create_order
+from ..services.orders import create_order
 router = APIRouter(prefix="/checkout", tags=["checkout"])
 
 # Checkout is intentionally a single command endpoint.
