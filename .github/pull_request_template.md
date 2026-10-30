@@ -10,7 +10,7 @@ This pull request implements and verifies systematic corrections for all 6 confi
 
 2. **Blank Idempotency Key Validation (B-002)**: Updated `require_idempotency_key` in `app/dependencies.py` to validate that keys are non-blank after stripping whitespace, correctly returning `HTTP 400` on blank/whitespace-only keys.
 3. **Configurable Payment Decline Token (B-003)**: Updated `app/services/payment.py` (`charge` and `is_decline`) to dynamically read `get_settings().payment_decline_token` instead of hardcoding literal `"decline"`, honoring the `PAYMENT_DECLINE_TOKEN` environment setting.
-4. **Catalogue Route Normalization (B-004)**: Added `@router.get("")` decorator to `app/api/products.py` so `GET /products` returns `HTTP 200 OK` directly without issuing a `307 Temporary Redirect` to `/products/`.
+4. **API Route Normalization (B-004)**: Added dual-routing decorators across `app/api/products.py`, `app/api/checkout.py`, `app/api/orders.py`, and `app/api/health.py` so endpoints resolve cleanly whether called with or without trailing slashes (e.g. `GET /products`, `POST /checkout/`, `GET /orders/`, `GET /health/`) without issuing `307 Temporary Redirect` status codes.
 5. **Discount Code Whitespace Handling (B-005)**: Updated `discount_for` in `app/services/pricing.py` to strip surrounding whitespace before validating against `"WELCOME10"`, correctly granting the 10% discount.
 6. **Pytest Discovery Configuration (B-006)**: Added `pythonpath = ["."]` to `[tool.pytest.ini_options]` in `pyproject.toml` to ensure direct CLI invocation of `pytest` from the repository root succeeds cleanly.
 
