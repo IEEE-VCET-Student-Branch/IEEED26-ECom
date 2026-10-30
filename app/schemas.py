@@ -23,17 +23,20 @@ class CartItemOut(BaseModel):
     quantity: int
     unit_price_minor: int
     line_total_minor: int
+    model_config = {"from_attributes": True}
 
 
 class CartOut(BaseModel):
     customer_id: str
     items: list[CartItemOut]
     subtotal_minor: int
+    model_config = {"from_attributes": True}
 
 
 class HealthOut(BaseModel):
     status: str
     service: str
+    model_config = {"from_attributes": True}
 
 
 class CheckoutIn(BaseModel):
@@ -47,6 +50,7 @@ class OrderItemOut(BaseModel):
     name: str
     quantity: int
     unit_price_minor: int
+    model_config = {"from_attributes": True}
 
 
 class OrderOut(BaseModel):
@@ -57,3 +61,4 @@ class OrderOut(BaseModel):
     discount_minor: int
     total_minor: int
     items: list[OrderItemOut]
+    model_config = {"from_attributes": True}

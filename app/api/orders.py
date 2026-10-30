@@ -15,5 +15,6 @@ def get_order(order_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("", response_model=list[OrderOut])
+@router.get("/", response_model=list[OrderOut], include_in_schema=False)
 def list_orders(db: Session = Depends(get_db)):
     return db.query(Order).order_by(Order.id).all()

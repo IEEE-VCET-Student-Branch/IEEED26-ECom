@@ -14,6 +14,8 @@ def available(item: CartItem) -> int:
 
 
 def reserve(db: Session, items: list[CartItem]) -> None:
+    for item in items:
+        db.refresh(item.product)
     validate(items)
     for item in items:
         item.product.inventory -= item.quantity
