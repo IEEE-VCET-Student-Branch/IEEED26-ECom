@@ -2,9 +2,12 @@ from fastapi import Header, HTTPException
 
 
 def require_idempotency_key(idempotency_key: str | None = Header(default=None)) -> str:
-    if not idempotency_key or len(idempotency_key) > 120:
+    if not idempotency_key:
         raise HTTPException(400, "Idempotency-Key header is required")
-    return idempotency_key
+    cleaned = idempotency_key.strip()
+    if not cleaned or len(cleaned) > 120:
+        raise HTTPException(400, "Idempotency-Key header is required")
+    return cleaned.lower()
 
 
 def validate_customer_id(customer_id: str) -> str:

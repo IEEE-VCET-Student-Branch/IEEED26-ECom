@@ -10,10 +10,16 @@ router = APIRouter(prefix="/cart", tags=["cart"])
 def get_or_create(db: Session, customer_id: str) -> Cart:
     cart = db.query(Cart).filter(Cart.customer_id == customer_id).first()
     if not cart:
-        cart = Cart(customer_id=customer_id)
-        db.add(cart)
-        db.commit()
-        db.refresh(cart)
+        try:
+            cart = Cart(customer_id=customer_id)
+            db.add(cart)
+            db.commit()
+            db.refresh(cart)
+        except Exception:
+            db.rollback()
+            cart = db.query(Cart).filter(Cart.customer_id == customer_id).first()
+            if not cart:
+                raise
     return cart
 
 
@@ -26,11 +32,13 @@ def as_out(cart: Cart) -> CartOut:
 
 
 @router.get("/{customer_id}", response_model=CartOut)
+@router.get("/{customer_id}/", response_model=CartOut, include_in_schema=False)
 def get_cart(customer_id: str, db: Session = Depends(get_db)):
     return as_out(get_or_create(db, customer_id))
 
 
 @router.post("/{customer_id}/items", response_model=CartOut)
+@router.post("/{customer_id}/items/", response_model=CartOut, include_in_schema=False)
 def add_item(customer_id: str, payload: CartItemIn, db: Session = Depends(get_db)):
     cart = get_or_create(db, customer_id)
     product = db.get(Product, payload.product_id)

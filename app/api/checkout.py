@@ -10,5 +10,6 @@ router = APIRouter(prefix="/checkout", tags=["checkout"])
 
 
 @router.post("", response_model=OrderOut)
+@router.post("/", response_model=OrderOut, include_in_schema=False)
 def checkout(payload: CheckoutIn, key: str = Depends(require_idempotency_key), db: Session = Depends(get_db)):
     return create_order(db, payload, key)
