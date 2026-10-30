@@ -1,19 +1,13 @@
-from fastapi import Header, HTTPException
-from .utils.idempotency import normalize_key
+﻿from fastapi import Header, HTTPException
 
 
-def require_idempotency_key(
-    idempotency_key: str | None = Header(default=None),
-) -> str:
-    if (
-        not idempotency_key
-        or not idempotency_key.strip()
-        or len(idempotency_key) > 120
-    ):
-        raise HTTPException(
-            400, "Idempotency-Key must be non-blank and at most 120 characters"
-        )
-    return normalize_key(idempotency_key)
+def require_idempotency_key(idempotency_key: str | None = Header(default=None)) -> str:
+    if idempotency_key is None:
+        raise HTTPException(400, "Idempotency-Key header is required")
+    normalized = idempotency_key.strip()
+    if not normalized or len(normalized) > 120 or len(idempotency_key) > 120:
+        raise HTTPException(400, "Idempotency-Key header is required")
+    return normalized.lower()
 
 
 def validate_customer_id(customer_id: str) -> str:
