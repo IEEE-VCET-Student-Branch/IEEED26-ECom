@@ -7,6 +7,7 @@ Team name:Agasthya
 This pull request implements and verifies systematic corrections for all 6 confirmed defects identified across the Northstar Market codebase to satisfy the authoritative behavioral specification in `docs/requirements.md`:
 
 1. **Idempotency Key Normalization (B-001)**: Normalized `Idempotency-Key` (case-folding and whitespace trimming) across header validation, database lookup, and order model persistence. Replaying checkouts with different casing or surrounding whitespace now retrieves the original order rather than failing with `400 {"detail":"Cart is empty"}`.
+
 2. **Blank Idempotency Key Validation (B-002)**: Updated `require_idempotency_key` in `app/dependencies.py` to validate that keys are non-blank after stripping whitespace, correctly returning `HTTP 400` on blank/whitespace-only keys.
 3. **Configurable Payment Decline Token (B-003)**: Updated `app/services/payment.py` (`charge` and `is_decline`) to dynamically read `get_settings().payment_decline_token` instead of hardcoding literal `"decline"`, honoring the `PAYMENT_DECLINE_TOKEN` environment setting.
 4. **Catalogue Route Normalization (B-004)**: Added `@router.get("")` decorator to `app/api/products.py` so `GET /products` returns `HTTP 200 OK` directly without issuing a `307 Temporary Redirect` to `/products/`.
