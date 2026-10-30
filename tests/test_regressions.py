@@ -16,3 +16,16 @@ def test_reject_blank_or_whitespace_key(seeded):
     res = seeded.post("/checkout", headers={"Idempotency-Key": "   "},
                       json={"customer_id": "alex", "payment_token": "tok"})
     assert res.status_code == 400
+
+
+def test_configurable_payment_decline_token(seeded, monkeypatch):
+    from app.config import get_settings
+    monkeypatch.setenv("PAYMENT_DECLINE_TOKEN", "custom-decline")
+    get_settings.cache_clear()
+    seeded.post("/cart/alex/items", json={"product_id": 1, "quantity": 1})
+    res_decline = seeded.post("/checkout", headers={"Idempotency-Key": "dec-custom-1"},
+                              json={"customer_id": "alex", "payment_token": "custom-decline"})
+    assert res_decline.status_code == 402
+    res_ok = seeded.post("/checkout", headers={"Idempotency-Key": "dec-custom-2"},
+                         json={"customer_id": "alex", "payment_token": "decline"})
+    assert res_ok.status_code == 200
