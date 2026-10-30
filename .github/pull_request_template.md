@@ -104,9 +104,9 @@ Before/after reproduction for each fixed defect:
    - *Before*: With `PAYMENT_DECLINE_TOKEN=custom_fail_token`, `POST /checkout` with `payment_token="custom_fail_token"` returned HTTP 200, while `"decline"` returned HTTP 402.
    - *After*: `POST /checkout` with token `custom_fail_token` returns HTTP 402 (declined), while `"decline"` returns HTTP 200 (paid).
 
-4. **Defect 4 (B-004 — GET /products routing)**:
-   - *Before*: `client.get("/products", follow_redirects=False)` returned HTTP 307 Temporary Redirect to `/products/` instead of returning the catalogue.
-   - *After*: Returns HTTP 200 with product catalogue items directly.
+4. **Defect 4 (B-004 — API route trailing-slash redirection)**:
+   - *Before*: `client.get("/products", follow_redirects=False)` and trailing-slash endpoint requests returned HTTP 307 Temporary Redirect instead of handling requests directly.
+   - *After*: Returns direct responses (HTTP 200/400) directly with 0 redirects across all endpoints whether requested with or without a trailing slash.
 
 5. **Defect 5 (B-005 — Discount code whitespace)**:
    - *Before*: `POST /checkout` with `discount_code="  welcome10  "` returned `discount_minor: 0`.
