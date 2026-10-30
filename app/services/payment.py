@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from ..config import get_settings
 
 
 @dataclass(frozen=True)
@@ -13,10 +14,10 @@ def _reference(status: str, amount_minor: int, token: str) -> str:
     return f"{prefix}-{amount_minor}{suffix}"
 
 
-def charge(token: str, amount_minor: int) -> PaymentResult:
-    status = "declined" if token == "decline" else "paid"
-    return PaymentResult(status, _reference(status, amount_minor, token))
-
-
 def is_decline(token: str) -> bool:
-    return token == "decline"
+    return token == get_settings().payment_decline_token
+
+
+def charge(token: str, amount_minor: int) -> PaymentResult:
+    status = "declined" if is_decline(token) else "paid"
+    return PaymentResult(status, _reference(status, amount_minor, token))

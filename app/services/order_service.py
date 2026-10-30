@@ -7,7 +7,8 @@ from . import inventory, payment, pricing
 
 
 def create_order(db: Session, request: CheckoutIn, key: str) -> Order:
-    existing = find_order(db, key)
+    normalized_key = key.strip().lower()
+    existing = find_order(db, normalized_key)
     if existing:
         return existing
     cart = db.query(Cart).filter(Cart.customer_id == request.customer_id).first()
@@ -20,7 +21,7 @@ def create_order(db: Session, request: CheckoutIn, key: str) -> Order:
         raise HTTPException(402, "Payment was declined")
     order = Order(customer_id=request.customer_id, status=result.status,
                   subtotal_minor=quote.subtotal_minor, discount_minor=quote.discount_minor,
-                  total_minor=quote.total_minor, idempotency_key=key.lower())
+                  total_minor=quote.total_minor, idempotency_key=normalized_key)
     db.add(order)
     db.flush()
     for item in cart.items:
@@ -30,6 +31,13 @@ def create_order(db: Session, request: CheckoutIn, key: str) -> Order:
     inventory.reserve(db, cart.items)
     order.payment_attempts.append(PaymentAttempt(status=result.status, provider_reference=result.reference))
     cart.items.clear()
-    db.commit()
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        existing = find_order(db, normalized_key)
+        if existing:
+            return existing
+        raise
     db.refresh(order)
     return order
