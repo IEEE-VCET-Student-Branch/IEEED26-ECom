@@ -37,3 +37,19 @@ def test_products_endpoint_with_and_without_trailing_slash(seeded):
     r_with_slash = seeded.get("/products/", follow_redirects=False)
     assert r_with_slash.status_code == 200
     assert r_no_slash.json() == r_with_slash.json()
+
+
+def test_order_schema_from_attributes(seeded):
+    from app.database import SessionLocal
+    from app.models import Order
+    from app.schemas import OrderOut
+    seeded.post("/cart/alex/items", json={"product_id": 1, "quantity": 1})
+    seeded.post("/checkout", headers={"Idempotency-Key": "val-1"},
+                json={"customer_id": "alex", "payment_token": "tok"})
+    db = SessionLocal()
+    order = db.query(Order).first()
+    validated = OrderOut.model_validate(order)
+    assert validated.id == order.id
+    assert validated.customer_id == "alex"
+    assert len(validated.items) == 1
+    db.close()
