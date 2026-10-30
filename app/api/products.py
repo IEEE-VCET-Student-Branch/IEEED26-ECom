@@ -13,6 +13,7 @@ def list_products(db: Session = Depends(get_db)):
 
 
 @router.get("/{product_id}", response_model=ProductOut)
+@router.get("/{product_id}/", response_model=ProductOut, include_in_schema=False)
 def get_product(product_id: int, db: Session = Depends(get_db)):
     product = db.get(Product, product_id)
     if not product:

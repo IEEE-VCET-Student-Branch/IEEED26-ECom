@@ -1,3 +1,4 @@
+import os
 from dataclasses import dataclass
 from ..config import get_settings
 
@@ -15,7 +16,8 @@ def _reference(status: str, amount_minor: int, token: str) -> str:
 
 
 def is_decline(token: str) -> bool:
-    return token == get_settings().payment_decline_token
+    decline_token = os.getenv("PAYMENT_DECLINE_TOKEN") or get_settings().payment_decline_token
+    return token == decline_token
 
 
 def charge(token: str, amount_minor: int) -> PaymentResult:
