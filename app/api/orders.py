@@ -7,6 +7,7 @@ router = APIRouter(prefix="/orders", tags=["orders"])
 
 
 @router.get("/{order_id}", response_model=OrderOut)
+@router.get("/{order_id}/", response_model=OrderOut, include_in_schema=False)
 def get_order(order_id: int, db: Session = Depends(get_db)):
     order = db.get(Order, order_id)
     if not order:
