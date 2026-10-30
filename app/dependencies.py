@@ -2,7 +2,8 @@ from fastapi import Header, HTTPException
 
 
 def require_idempotency_key(idempotency_key: str | None = Header(default=None)) -> str:
-    if not idempotency_key or len(idempotency_key) > 120:
+    stripped = (idempotency_key or "").strip()
+    if not stripped or len(idempotency_key) > 120:
         raise HTTPException(400, "Idempotency-Key header is required")
     return idempotency_key
 
