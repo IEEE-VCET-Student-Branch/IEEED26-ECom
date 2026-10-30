@@ -20,7 +20,7 @@ def create_order(db: Session, request: CheckoutIn, key: str) -> Order:
         raise HTTPException(402, "Payment was declined")
     order = Order(customer_id=request.customer_id, status=result.status,
                   subtotal_minor=quote.subtotal_minor, discount_minor=quote.discount_minor,
-                  total_minor=quote.total_minor, idempotency_key=key.lower())
+                  total_minor=quote.total_minor, idempotency_key=key.lower().strip())
     db.add(order)
     db.flush()
     for item in cart.items:
