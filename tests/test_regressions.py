@@ -53,3 +53,11 @@ def test_order_schema_from_attributes(seeded):
     assert validated.customer_id == "alex"
     assert len(validated.items) == 1
     db.close()
+
+
+def test_reset_db_memory_url(monkeypatch):
+    from app.config import get_settings
+    from scripts.reset_db import reset_db
+    monkeypatch.setenv("DATABASE_URL", "sqlite:///:memory:")
+    get_settings.cache_clear()
+    reset_db()
