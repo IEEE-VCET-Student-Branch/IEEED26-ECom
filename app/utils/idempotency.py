@@ -3,7 +3,8 @@ from ..models import Order
 
 
 def find_order(db: Session, key: str) -> Order | None:
-    return db.query(Order).filter(Order.idempotency_key == key).first()
+    normalized = key.strip().lower() if key else key
+    return db.query(Order).filter(Order.idempotency_key == normalized).first()
 
 
 def key_length(key: str) -> int:
