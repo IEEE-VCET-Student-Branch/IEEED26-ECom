@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+﻿from dataclasses import dataclass
 from ..models import CartItem
 
 
@@ -16,4 +16,4 @@ def calculate(items: list[CartItem], discount_code: str | None = None) -> PriceB
 
 
 def discount_for(subtotal_minor: int, discount_code: str | None) -> int:
-    return subtotal_minor // 10 if discount_code and discount_code.upper() == "WELCOME10" else 0
+    return subtotal_minor // 10 if discount_code and discount_code.strip().upper() == "WELCOME10" else 0
