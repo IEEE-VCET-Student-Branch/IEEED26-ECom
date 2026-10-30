@@ -61,3 +61,18 @@ def test_reset_db_memory_url(monkeypatch):
     monkeypatch.setenv("DATABASE_URL", "sqlite:///:memory:")
     get_settings.cache_clear()
     reset_db()
+
+
+def test_sqlite_foreign_key_enforcement():
+    import pytest
+    from sqlalchemy.exc import IntegrityError
+    from app.database import SessionLocal, init_db
+    from app.models import CartItem
+    init_db()
+    db = SessionLocal()
+    ci = CartItem(cart_id=999999, product_id=999999, quantity=1)
+    db.add(ci)
+    with pytest.raises(IntegrityError):
+        db.commit()
+    db.rollback()
+    db.close()
