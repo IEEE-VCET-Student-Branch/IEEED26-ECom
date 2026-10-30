@@ -2,7 +2,7 @@
 
 Northstar Market is a small FastAPI e-commerce service prepared for **THE FINAL COMMIT**, a source-and-history debugging competition. It is intentionally supplied with regressions. Participants should investigate the code, tests, and Git history rather than assume the incident documents are authoritative.
 
-The behavioral contract the service must satisfy is in [`docs/requirements.md`](docs/requirements.md).
+The behavioral contract the service must satisfy is in [`docs/requirements.md`](docs/requirements.md). Submission rules are in [`docs/submission.md`](docs/submission.md).
 
 ## Run locally
 
