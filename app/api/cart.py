@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models import Cart, CartItem, Product
@@ -9,11 +11,17 @@ router = APIRouter(prefix="/cart", tags=["cart"])
 
 def get_or_create(db: Session, customer_id: str) -> Cart:
     cart = db.query(Cart).filter(Cart.customer_id == customer_id).first()
-    if not cart:
-        cart = Cart(customer_id=customer_id)
-        db.add(cart)
+    if cart:
+        return cart
+    cart = Cart(customer_id=customer_id)
+    db.add(cart)
+    try:
         db.commit()
-        db.refresh(cart)
+    except IntegrityError:
+        # A concurrent request created the cart between the lookup and this
+        # insert. Roll back and reuse the row it committed.
+        db.rollback()
+        return db.query(Cart).filter(Cart.customer_id == customer_id).one()
     return cart
 
 
@@ -37,10 +45,28 @@ def add_item(customer_id: str, payload: CartItemIn, db: Session = Depends(get_db
     if not product:
         raise HTTPException(404, "Product not found")
     item = next((x for x in cart.items if x.product_id == product.id), None)
-    if item:
-        item.quantity += payload.quantity
+    if item is not None:
+        # Increment in SQL so concurrent adds cannot overwrite each other's
+        # read-modify-write of the same line.
+        db.execute(
+            update(CartItem)
+            .where(CartItem.id == item.id)
+            .values(quantity=CartItem.quantity + payload.quantity)
+        )
+        db.commit()
     else:
-        cart.items.append(CartItem(product_id=product.id, quantity=payload.quantity))
-    db.commit()
+        db.add(CartItem(cart_id=cart.id, product_id=product.id, quantity=payload.quantity))
+        try:
+            db.commit()
+        except IntegrityError:
+            # A concurrent request inserted the same line first; add to it
+            # instead of creating a duplicate.
+            db.rollback()
+            db.execute(
+                update(CartItem)
+                .where(CartItem.cart_id == cart.id, CartItem.product_id == product.id)
+                .values(quantity=CartItem.quantity + payload.quantity)
+            )
+            db.commit()
     db.refresh(cart)
     return as_out(cart)

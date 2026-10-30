@@ -4,20 +4,65 @@ Northstar Market is a small FastAPI e-commerce service prepared for **THE FINAL 
 
 The behavioral contract the service must satisfy is in [`docs/requirements.md`](docs/requirements.md). Submission rules are in [`docs/submission.md`](docs/submission.md).
 
-## Run locally
+## Run Locally
+
+### Prerequisites
+
+- Python 3.11
+- pip
+
+### 1. Create a virtual environment
+
+**Windows (PowerShell):**
+
+```powershell
+py -3.11 -m venv .venv
+```
+
+**Linux/macOS:**
 
 ```bash
 python3.11 -m venv .venv
+```
+
+### 2. Activate the virtual environment
+
+**Windows (PowerShell):**
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+**Linux/macOS:**
+
+```bash
 source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
+
+### 4. Initialize the database
+
+```bash
 python -m scripts.reset_db
 python -m scripts.seed
+```
+
+### 5. Start the server
+
+```bash
 uvicorn app.main:app --reload
 ```
 
-Open `http://127.0.0.1:8000/docs`. All prices are integer minor units. Use `WELCOME10` for the sample discount and `decline` as the fake payment token to simulate a decline.
+Open the API documentation at:
 
-The seed command is safe to run repeatedly; it only inserts the deterministic catalog when the database has no products.
+http://127.0.0.1:8000/docs
+
+**Note:** The seed command is safe to run repeatedly. It inserts the deterministic catalogue only when the database contains no products.
 
 ## Tests
 
