@@ -1,6 +1,6 @@
 ## Team
 
-Team name: Final Commit Debuggers
+Team name: Clutch Crew
 
 ## Summary
 
