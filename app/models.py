@@ -22,7 +22,7 @@ class Cart(Base):
     __tablename__ = "carts"
     id: Mapped[int] = mapped_column(primary_key=True)
     customer_id: Mapped[str] = mapped_column(String(80), unique=True, index=True)
-    items: Mapped[list["CartItem"]] = relationship(back_populates="cart", cascade="all, delete-orphan")
+    items: Mapped[list["CartItem"]] = relationship(back_populates="cart", cascade="all, delete-orphan", order_by="CartItem.id")
 
 
 class CartItem(Base):
@@ -46,7 +46,7 @@ class Order(Base):
     total_minor: Mapped[int] = mapped_column(Integer)
     idempotency_key: Mapped[str] = mapped_column(String(120), unique=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
-    items: Mapped[list["OrderItem"]] = relationship(back_populates="order", cascade="all, delete-orphan")
+    items: Mapped[list["OrderItem"]] = relationship(back_populates="order", cascade="all, delete-orphan", order_by="OrderItem.id")
     payment_attempts: Mapped[list["PaymentAttempt"]] = relationship(back_populates="order", cascade="all, delete-orphan")
 
 
@@ -69,4 +69,3 @@ class PaymentAttempt(Base):
     status: Mapped[str] = mapped_column(String(30))
     provider_reference: Mapped[str] = mapped_column(String(100))
     order: Mapped[Order] = relationship(back_populates="payment_attempts")
-
